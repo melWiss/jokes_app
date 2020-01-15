@@ -156,10 +156,16 @@ class SwipeCards2 extends StatefulWidget {
 class _SwipeCards2State extends State<SwipeCards2> {
   double dx1, dx1b, dy1, dx1End, dy1End;
   double dx2, dy2, dx2End, dy2End;
+  double dx3, dy3;
   double heightCard2,widthCard2,heightCard2End,widthCard2End;
+  Color thirdCardColor;
   @override
   void initState() {
     super.initState();
+    init();
+  }
+
+  void init(){
     dx1 = ((widget.screenWidth * .9) * .05) / 2;
     dy1 = ((widget.screenHeight * .7) * .25);
     dx1End = dx1;
@@ -172,6 +178,9 @@ class _SwipeCards2State extends State<SwipeCards2> {
     widthCard2 = (widget.screenWidth * .9) * .75;
     heightCard2End = (widget.screenHeight * .7) * .55;
     widthCard2End = (widget.screenWidth * .9) * .75;
+    dx3 = dx2;
+    dy3 = dy2;
+    thirdCardColor = Colors.white10;
   }
 
   @override
@@ -179,14 +188,34 @@ class _SwipeCards2State extends State<SwipeCards2> {
     return Container(
       height: MediaQuery.of(context).size.height * .7,
       width: MediaQuery.of(context).size.width * .9,
-      //color: Colors.white,
       child: Stack(
         children: <Widget>[
+          Transform.translate(
+            offset: Offset(dx3, dy3),
+            child: Material(
+              elevation: 8,
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+              child: ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: 500),
+                  color: thirdCardColor,
+                  height: heightCard2,
+                  width: widthCard2,
+                ),
+              ),
+            ),
+          ),
           TweenAnimationBuilder(
             tween: Tween<Offset>(
               begin: Offset(dx2, dy2),
               end: Offset(dx2End, dy2End),
             ),
+            onEnd: (){
+              setState(() {
+                init();
+              });
+            },
             duration: Duration(milliseconds: 200),
             child: Material(
               elevation: 8,
@@ -251,6 +280,7 @@ class _SwipeCards2State extends State<SwipeCards2> {
                     dy2End = dy1;
                     heightCard2End = (widget.screenHeight * .7) * .75;
                     widthCard2End = (widget.screenWidth * .9) * .95;
+                    thirdCardColor = Colors.white38;
                   }
                 });
               },
