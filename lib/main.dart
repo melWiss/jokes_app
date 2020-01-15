@@ -182,7 +182,7 @@ class _SwipeCards2State extends State<SwipeCards2> {
     dx3 = dx2;
     dy3 = dy2;
     thirdCardColor = Colors.white10;
-    duration = 0;
+    duration = 1;
   }
 
   @override
@@ -244,7 +244,7 @@ class _SwipeCards2State extends State<SwipeCards2> {
               setState(() {
                 dx1 = details.globalPosition.dx - widget.screenWidth / 2;
                 dx1End = dx1;
-                if(duration == 0)
+                if(duration == 1)
                   duration = 200;
               });
             },
