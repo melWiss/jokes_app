@@ -159,6 +159,7 @@ class _SwipeCards2State extends State<SwipeCards2> {
   double dx3, dy3;
   double heightCard2,widthCard2,heightCard2End,widthCard2End;
   Color thirdCardColor;
+  int duration;
   @override
   void initState() {
     super.initState();
@@ -181,6 +182,7 @@ class _SwipeCards2State extends State<SwipeCards2> {
     dx3 = dx2;
     dy3 = dy2;
     thirdCardColor = Colors.white10;
+    duration = 0;
   }
 
   @override
@@ -198,7 +200,7 @@ class _SwipeCards2State extends State<SwipeCards2> {
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(20)),
                 child: AnimatedContainer(
-                  duration: Duration(milliseconds: 500),
+                  duration: Duration(milliseconds: duration),
                   color: thirdCardColor,
                   height: heightCard2,
                   width: widthCard2,
@@ -216,14 +218,14 @@ class _SwipeCards2State extends State<SwipeCards2> {
                 init();
               });
             },
-            duration: Duration(milliseconds: 200),
+            duration: Duration(milliseconds: duration),
             child: Material(
               elevation: 8,
               borderRadius: BorderRadius.all(Radius.circular(20)),
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(20)),
                 child: AnimatedContainer(
-                  duration: Duration(milliseconds: 200),
+                  duration: Duration(milliseconds: duration),
                   height: heightCard2End,
                   width: widthCard2End,
                   color: Colors.white38,
@@ -242,6 +244,8 @@ class _SwipeCards2State extends State<SwipeCards2> {
               setState(() {
                 dx1 = details.globalPosition.dx - widget.screenWidth / 2;
                 dx1End = dx1;
+                if(duration == 0)
+                  duration = 200;
               });
             },
             onHorizontalDragUpdate: (DragUpdateDetails details) {
@@ -272,7 +276,7 @@ class _SwipeCards2State extends State<SwipeCards2> {
             },
             child: TweenAnimationBuilder(
               tween: Tween<double>(begin: dx1, end: dx1End),
-              duration: Duration(milliseconds: 200),
+              duration: Duration(milliseconds: duration),
               onEnd: () {
                 setState(() {
                   if (dx1 != dx1End) {
