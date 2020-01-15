@@ -193,10 +193,11 @@ class _SwipeCards2State extends State<SwipeCards2> {
               borderRadius: BorderRadius.all(Radius.circular(20)),
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(20)),
-                child: Container(
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: 200),
                   height: heightCard2End,
                   width: widthCard2End,
-                  color: Colors.blue,
+                  color: Colors.white38,
                 ),
               ),
             ),
