@@ -8,10 +8,16 @@ class SwipeCards extends StatefulWidget {
     this.screenWidth,
     this.itemCount,
     this.children,
+    this.onSwipeLeft,
+    this.onSwipeRight,
+    this.onDoubleTap,
   }) : super(key: key);
   final double screenHeight, screenWidth;
   final int itemCount;
   final List<Widget> children;
+  final Function onSwipeLeft;
+  final Function onSwipeRight;
+  final Function onDoubleTap;
 
   @override
   _SwipeCardsState createState() => _SwipeCardsState();
@@ -28,11 +34,15 @@ class _SwipeCardsState extends State<SwipeCards> {
   Widget card1, card2, card3;
   List<Widget> cards;
   int counter;
+  Function onSwipeLeft,onSwipeRight, onDoubleTap;
   @override
   void initState() {
     super.initState();
     itemCount = widget.itemCount;
     counter = 0;
+    onSwipeLeft = widget.onSwipeLeft;
+    onSwipeRight = widget.onSwipeRight;
+    onDoubleTap = widget.onDoubleTap;
     if (widget.children != null) {
       cards = widget.children;
       cards.add(null);
@@ -104,7 +114,6 @@ class _SwipeCardsState extends State<SwipeCards> {
                         card1 = cards[counter];
                         card2 = cards[counter + 1];
                         card3 = cards[counter + 2];
-                        print("swiped");
                         init();
                       }
                     });
@@ -134,6 +143,7 @@ class _SwipeCardsState extends State<SwipeCards> {
               : Container(),
           card1 != null
               ? GestureDetector(
+                onDoubleTap: onDoubleTap,
                   onHorizontalDragStart: (DragStartDetails details) {
                     setState(() {
                       dx1 = details.globalPosition.dx - widget.screenWidth / 2;
@@ -149,17 +159,16 @@ class _SwipeCardsState extends State<SwipeCards> {
                   },
                   onHorizontalDragEnd: (DragEndDetails details) {
                     if (details.velocity.pixelsPerSecond.dx >= 1200) {
-                      print("dragged right");
+                      onSwipeRight();
                       setState(() {
                         dx1End = widget.screenWidth + 20;
                       });
                     } else if (details.velocity.pixelsPerSecond.dx <= -1200) {
-                      print("dragged left");
+                      onSwipeLeft();
                       setState(() {
                         dx1End = -widget.screenWidth - 20;
                       });
                     } else {
-                      print("reset position");
                       setState(() {
                         dx1 = ((widget.screenWidth * .9) * .05) / 2;
                         dx1End = dx1;

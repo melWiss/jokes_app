@@ -56,6 +56,9 @@ class _MyHomePageState extends State<MyHomePage> {
         child: SwipeCards(
           screenHeight: MediaQuery.of(context).size.height,
           screenWidth: MediaQuery.of(context).size.width,
+          onDoubleTap: ()=>print("double tapped"),
+          onSwipeLeft: ()=>print("Swiped left"),
+          onSwipeRight: ()=>print("Swiped right"),
           children: List<Widget>.generate(
             10,
             (index) {
