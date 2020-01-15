@@ -35,22 +35,17 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var bottomIndex;
-  SwipeCards swipeCards;
+  int index;
 
   @override
   void initState() {
     super.initState();
     bottomIndex = 0;
+    index = 0;
   }
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
-    swipeCards = SwipeCards(
-      screenHeight: screenHeight,
-      screenWidth: screenWidth,
-    );
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -58,7 +53,21 @@ class _MyHomePageState extends State<MyHomePage> {
         centerTitle: true,
       ),
       body: Center(
-        child: swipeCards,
+        child: SwipeCards(
+          screenHeight: MediaQuery.of(context).size.height,
+          screenWidth: MediaQuery.of(context).size.width,
+          children: List<Widget>.generate(
+            10,
+            (index) {
+              return Center(
+                child: Text(
+                  "Card number $index",
+                  style: TextStyle(fontSize: 30),
+                ),
+              );
+            },
+          ),
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Colors.yellow,
