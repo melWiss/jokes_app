@@ -33,7 +33,7 @@ class _SwipeCardsState extends State<SwipeCards> {
   Widget card1, card2, card3;
   List<Widget> cards;
   int counter;
-  Function onSwipeLeft,onSwipeRight, onDoubleTap;
+  Function onSwipeLeft, onSwipeRight, onDoubleTap;
   @override
   void initState() {
     super.initState();
@@ -141,74 +141,77 @@ class _SwipeCardsState extends State<SwipeCards> {
                 )
               : Container(),
           card1 != null
-              ? GestureDetector(
-                onDoubleTap: onDoubleTap,
-                  onHorizontalDragStart: (DragStartDetails details) {
+              ? TweenAnimationBuilder(
+                  tween: Tween<double>(begin: dx1, end: dx1End),
+                  duration: Duration(milliseconds: duration),
+                  onEnd: () {
                     setState(() {
-                      dx1 = details.globalPosition.dx - widget.screenWidth / 2;
-                      dx1End = dx1;
-                      if (duration == 1) duration = 200;
+                      if (dx1 != dx1End) {
+                        dx2End = ((widget.screenWidth * .9) * .05) / 2;
+                        dy2End = dy1;
+                        heightCard2End = (widget.screenHeight * .7) * .75;
+                        widthCard2End = (widget.screenWidth * .9) * .95;
+                        thirdCardColor = Colors.white38;
+                      }
                     });
                   },
-                  onHorizontalDragUpdate: (DragUpdateDetails details) {
-                    setState(() {
-                      dx1 = details.globalPosition.dx - widget.screenWidth / 2;
-                      dx1End = dx1;
-                    });
-                  },
-                  onHorizontalDragEnd: (DragEndDetails details) {
-                    if (details.velocity.pixelsPerSecond.dx >= 1200) {
-                      onSwipeRight();
-                      setState(() {
-                        dx1End = widget.screenWidth + 20;
-                      });
-                    } else if (details.velocity.pixelsPerSecond.dx <= -1200) {
-                      onSwipeLeft();
-                      setState(() {
-                        dx1End = -widget.screenWidth - 20;
-                      });
-                    } else {
-                      setState(() {
-                        dx1 = ((widget.screenWidth * .9) * .05) / 2;
-                        dx1End = dx1;
-                      });
-                    }
-                  },
-                  child: TweenAnimationBuilder(
-                    tween: Tween<double>(begin: dx1, end: dx1End),
-                    duration: Duration(milliseconds: duration),
-                    onEnd: () {
-                      setState(() {
-                        if (dx1 != dx1End) {
-                          dx2End = ((widget.screenWidth * .9) * .05) / 2;
-                          dy2End = dy1;
-                          heightCard2End = (widget.screenHeight * .7) * .75;
-                          widthCard2End = (widget.screenWidth * .9) * .95;
-                          thirdCardColor = Colors.white38;
-                        }
-                      });
-                    },
-                    child: Material(
-                      elevation: 8,
+                  child: Material(
+                    elevation: 8,
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                    child: ClipRRect(
                       borderRadius: BorderRadius.all(Radius.circular(20)),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                        child: Container(
-                          height: (widget.screenHeight * .7) * .75,
-                          width: (widget.screenWidth * .9) * .95,
-                          color: Colors.white38,
-                          child: card1,
-                        ),
+                      child: Container(
+                        height: (widget.screenHeight * .7) * .75,
+                        width: (widget.screenWidth * .9) * .95,
+                        color: Colors.white38,
+                        child: card1,
                       ),
                     ),
-                    builder: (context, double dx1a, card) {
-                      dx1b = dx1a;
-                      return Transform.translate(
-                        offset: Offset(dx1b, dy1),
-                        child: card,
-                      );
-                    },
                   ),
+                  builder: (context, double dx1a, card) {
+                    dx1b = dx1a;
+                    return Transform.translate(
+                      offset: Offset(dx1b, dy1),
+                      child: GestureDetector(
+                        onDoubleTap: onDoubleTap,
+                        onHorizontalDragStart: (DragStartDetails details) {
+                          setState(() {
+                            dx1 = details.globalPosition.dx -
+                                widget.screenWidth / 2;
+                            dx1End = dx1;
+                            if (duration == 1) duration = 200;
+                          });
+                        },
+                        onHorizontalDragUpdate: (DragUpdateDetails details) {
+                          setState(() {
+                            dx1 = details.globalPosition.dx -
+                                widget.screenWidth / 2;
+                            dx1End = dx1;
+                          });
+                        },
+                        onHorizontalDragEnd: (DragEndDetails details) {
+                          if (details.velocity.pixelsPerSecond.dx >= 1200) {
+                            onSwipeRight();
+                            setState(() {
+                              dx1End = widget.screenWidth + 20;
+                            });
+                          } else if (details.velocity.pixelsPerSecond.dx <=
+                              -1200) {
+                            onSwipeLeft();
+                            setState(() {
+                              dx1End = -widget.screenWidth - 20;
+                            });
+                          } else {
+                            setState(() {
+                              dx1 = ((widget.screenWidth * .9) * .05) / 2;
+                              dx1End = dx1;
+                            });
+                          }
+                        },
+                        child: card,
+                      ),
+                    );
+                  },
                 )
               : Container(),
         ],
