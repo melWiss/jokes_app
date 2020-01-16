@@ -23,6 +23,7 @@ class SwipeCards extends StatefulWidget {
 }
 
 class _SwipeCardsState extends State<SwipeCards> {
+  double screenHeight,screenWidth;
   double dx1, dx1b, dy1, dx1End, dy1End;
   double dx2, dy2, dx2End, dy2End;
   double dx3, dy3;
@@ -37,6 +38,8 @@ class _SwipeCardsState extends State<SwipeCards> {
   @override
   void initState() {
     super.initState();
+    screenHeight = widget.screenHeight;
+    screenWidth = widget.screenWidth;
     itemCount = widget.itemCount;
     counter = 0;
     onSwipeLeft = widget.onSwipeLeft;
@@ -76,6 +79,12 @@ class _SwipeCardsState extends State<SwipeCards> {
 
   @override
   Widget build(BuildContext context) {
+    if(screenHeight != widget.screenHeight)
+      setState(() {
+        print("initiated");
+        screenHeight = widget.screenHeight;
+        init();
+      });
     return Container(
       height: widget.screenHeight * .7,
       width: widget.screenWidth * .9,
