@@ -54,11 +54,35 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: SwipeCards(
+          onSwipedLeftAppear: Container(
+            color: Colors.red,
+            child: Center(
+              child: Text(
+                "LEFT",
+                style: TextStyle(
+                  fontSize: 50,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          onSwipedRightAppear: Container(
+            color: Colors.blue,
+            child: Center(
+              child: Text(
+                "RIGHT",
+                style: TextStyle(
+                  fontSize: 50,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
           screenHeight: MediaQuery.of(context).size.height,
           screenWidth: MediaQuery.of(context).size.width,
-          onDoubleTap: ()=>print("double tapped"),
-          onSwipeLeft: ()=>print("Swiped left"),
-          onSwipeRight: ()=>print("Swiped right"),
+          onDoubleTap: () => print("double tapped"),
+          onSwipeLeft: () => print("Swiped left"),
+          onSwipeRight: () => print("Swiped right"),
           children: List<Widget>.generate(
             10,
             (index) {

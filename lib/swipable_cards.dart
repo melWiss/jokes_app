@@ -10,6 +10,8 @@ class SwipeCards extends StatefulWidget {
     this.onSwipeLeft,
     this.onSwipeRight,
     this.onDoubleTap,
+    this.onSwipedRightAppear,
+    this.onSwipedLeftAppear,
   }) : super(key: key);
   final double screenHeight, screenWidth;
   final int itemCount;
@@ -17,27 +19,31 @@ class SwipeCards extends StatefulWidget {
   final Function onSwipeLeft;
   final Function onSwipeRight;
   final Function onDoubleTap;
+  final Widget onSwipedLeftAppear, onSwipedRightAppear;
 
   @override
   _SwipeCardsState createState() => _SwipeCardsState();
 }
 
 class _SwipeCardsState extends State<SwipeCards> {
-  double screenHeight,screenWidth;
-  double dx1, dx1b, dy1, dx1End, dy1End;
+  double screenHeight, screenWidth;
+  double dx1, dx1b, dy1, dx1End, dy1End, heightCard1, widthCard1;
   double dx2, dy2, dx2End, dy2End;
   double dx3, dy3;
   double heightCard2, widthCard2, heightCard2End, widthCard2End;
   Color thirdCardColor;
   int duration;
   int itemCount;
-  Widget card1, card2, card3;
+  Widget card1, card2, card3, onSwipedLeftAppear, onSwipedRightAppear;
+  double swipedCardLeftOpacity, swipedCardRightOpacity;
   List<Widget> cards;
   int counter;
   Function onSwipeLeft, onSwipeRight, onDoubleTap;
   @override
   void initState() {
     super.initState();
+    onSwipedLeftAppear = widget.onSwipedLeftAppear;
+    onSwipedRightAppear = widget.onSwipedRightAppear;
     screenHeight = widget.screenHeight;
     screenWidth = widget.screenWidth;
     itemCount = widget.itemCount;
@@ -61,8 +67,13 @@ class _SwipeCardsState extends State<SwipeCards> {
   void init() {
     dx1 = ((widget.screenWidth * .9) * .05) / 2;
     dy1 = ((widget.screenHeight * .7) * .25);
+    swipedCardLeftOpacity = 0;
+    swipedCardRightOpacity = 0;
+    dx1b = dx1;
     dx1End = dx1;
     dy1End = dy1;
+    heightCard1 = (widget.screenHeight * .7) * .75;
+    widthCard1 = (widget.screenWidth * .9) * .95;
     dx2 = ((widget.screenWidth * .9) * .25) / 2;
     dy2 = ((widget.screenHeight * .7) * .01);
     dx2End = dx2;
@@ -79,10 +90,11 @@ class _SwipeCardsState extends State<SwipeCards> {
 
   @override
   Widget build(BuildContext context) {
-    if(screenHeight != widget.screenHeight)
+    if (screenHeight != widget.screenHeight)
       setState(() {
         print("initiated");
         screenHeight = widget.screenHeight;
+        screenWidth = widget.screenWidth;
         init();
       });
     return Container(
@@ -170,10 +182,32 @@ class _SwipeCardsState extends State<SwipeCards> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.all(Radius.circular(20)),
                       child: Container(
-                        height: (widget.screenHeight * .7) * .75,
-                        width: (widget.screenWidth * .9) * .95,
+                        height: heightCard1,
+                        width: widthCard1,
                         color: Colors.white38,
-                        child: card1,
+                        child: Stack(
+                          children: <Widget>[
+                            card1,
+                            onSwipedLeftAppear != null
+                                ? AnimatedContainer(
+                                    duration: Duration(milliseconds: duration),
+                                    child: Opacity(
+                                      child: onSwipedLeftAppear,
+                                      opacity: swipedCardLeftOpacity,
+                                    ),
+                                  )
+                                : Container(),
+                            onSwipedRightAppear != null
+                                ? AnimatedContainer(
+                                    duration: Duration(milliseconds: duration),
+                                    child: Opacity(
+                                      child: onSwipedRightAppear,
+                                      opacity: swipedCardRightOpacity,
+                                    ),
+                                  )
+                                : Container(),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -188,6 +222,22 @@ class _SwipeCardsState extends State<SwipeCards> {
                             dx1 = details.globalPosition.dx -
                                 widget.screenWidth / 2;
                             dx1End = dx1;
+                            if (dx1 > 0) {
+                              if (dx1 < screenWidth / 2)
+                                swipedCardRightOpacity = dx1 / screenWidth;
+                              else
+                                swipedCardRightOpacity = 1;
+                              swipedCardLeftOpacity = 0;
+                            } else if (dx1 < 0) {
+                              if (dx1.abs() < screenWidth / 2)
+                                swipedCardLeftOpacity = dx1.abs() / screenWidth;
+                              else
+                                swipedCardLeftOpacity = 1;
+                              swipedCardRightOpacity = 0;
+                            } else {
+                              swipedCardLeftOpacity = 0;
+                              swipedCardRightOpacity = 0;
+                            }
                             if (duration == 1) duration = 200;
                           });
                         },
@@ -196,28 +246,56 @@ class _SwipeCardsState extends State<SwipeCards> {
                             dx1 = details.globalPosition.dx -
                                 widget.screenWidth / 2;
                             dx1End = dx1;
+                            if (dx1 > 0) {
+                              if (dx1 < screenWidth / 2)
+                                swipedCardRightOpacity = dx1 / screenWidth;
+                              else
+                                swipedCardRightOpacity = 1;
+                              swipedCardLeftOpacity = 0;
+                            } else if (dx1 < 0) {
+                              if (dx1.abs() < screenWidth / 2)
+                                swipedCardLeftOpacity = dx1.abs() / screenWidth;
+                              else
+                                swipedCardLeftOpacity = 1;
+                              swipedCardRightOpacity = 0;
+                            } else {
+                              swipedCardLeftOpacity = 0;
+                              swipedCardRightOpacity = 0;
+                            }
                           });
                         },
                         onHorizontalDragEnd: (DragEndDetails details) {
                           if (details.velocity.pixelsPerSecond.dx >= 1200) {
                             onSwipeRight();
                             setState(() {
-                              dx1End = widget.screenWidth + 20;
+                              dx1End = widget.screenWidth;
+                              dx1 = ((widget.screenWidth * .9) * .05) / 2;
+                              swipedCardRightOpacity = 1;
+                              swipedCardLeftOpacity = 0;
                             });
                           } else if (details.velocity.pixelsPerSecond.dx <=
                               -1200) {
                             onSwipeLeft();
                             setState(() {
-                              dx1End = -widget.screenWidth - 20;
+                              dx1End = -widget.screenWidth;
+                              dx1 = ((widget.screenWidth * .9) * .05) / 2;
+                              swipedCardLeftOpacity = 1;
+                              swipedCardRightOpacity = 0;
                             });
                           } else {
                             setState(() {
                               dx1 = ((widget.screenWidth * .9) * .05) / 2;
                               dx1End = dx1;
+                              swipedCardLeftOpacity = 0;
+                              swipedCardRightOpacity = 0;
                             });
                           }
                         },
-                        child: card,
+                        child: Stack(
+                          children: <Widget>[
+                            card,
+                          ],
+                        ),
                       ),
                     );
                   },
