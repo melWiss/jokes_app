@@ -51,16 +51,7 @@ class _SwipeCardsState extends State<SwipeCards> {
     onSwipeLeft = widget.onSwipeLeft;
     onSwipeRight = widget.onSwipeRight;
     onDoubleTap = widget.onDoubleTap;
-    if (widget.children != null) {
-      cards = widget.children;
-      cards.add(null);
-      cards.add(null);
-      cards.add(null);
-      card1 = cards[counter];
-      card2 = cards[counter + 1];
-      card3 = cards[counter + 2];
-    } else
-      cards = [null, null, null];
+    initCards();
     init();
   }
 
@@ -85,7 +76,7 @@ class _SwipeCardsState extends State<SwipeCards> {
     dx3 = dx2;
     dy3 = dy2;
     thirdCardColor = Colors.white10;
-    duration = 1;
+    duration = 0;
   }
 
   @override
@@ -97,6 +88,7 @@ class _SwipeCardsState extends State<SwipeCards> {
         screenWidth = widget.screenWidth;
         init();
       });
+    initCards();
     return Container(
       height: widget.screenHeight * .7,
       width: widget.screenWidth * .9,
@@ -238,7 +230,7 @@ class _SwipeCardsState extends State<SwipeCards> {
                               swipedCardLeftOpacity = 0;
                               swipedCardRightOpacity = 0;
                             }
-                            if (duration == 1) duration = 200;
+                            if (duration == 0) duration = 200;
                           });
                         },
                         onHorizontalDragUpdate: (DragUpdateDetails details) {
@@ -304,5 +296,18 @@ class _SwipeCardsState extends State<SwipeCards> {
         ],
       ),
     );
+  }
+
+  void initCards() {
+    if (widget.children != null) {
+      cards = widget.children;
+      cards.add(null);
+      cards.add(null);
+      cards.add(null);
+      card1 = cards[counter];
+      card2 = cards[counter + 1];
+      card3 = cards[counter + 2];
+    } else
+      cards = [null, null, null];
   }
 }

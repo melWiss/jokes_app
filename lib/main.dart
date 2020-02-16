@@ -3,6 +3,7 @@ import 'dart:io';
 import 'swipable_cards.dart';
 import 'package:flutter/foundation.dart'
     show debugDefaultTargetPlatformOverride;
+import 'package:jokes_app/blocs/joke.dart';
 
 void main() {
   if (Platform.isWindows || Platform.isLinux)
@@ -36,6 +37,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   var bottomIndex;
   int index;
+  JokesApi jokesApi = JokesApi();
 
   @override
   void initState() {
@@ -53,48 +55,56 @@ class _MyHomePageState extends State<MyHomePage> {
         centerTitle: true,
       ),
       body: Center(
-        child: SwipeCards(
-          onSwipedLeftAppear: Container(
-            color: Colors.red,
-            child: Center(
-              child: Text(
-                "LEFT",
-                style: TextStyle(
-                  fontSize: 50,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-          onSwipedRightAppear: Container(
-            color: Colors.blue,
-            child: Center(
-              child: Text(
-                "RIGHT",
-                style: TextStyle(
-                  fontSize: 50,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-          screenHeight: MediaQuery.of(context).size.height,
-          screenWidth: MediaQuery.of(context).size.width,
-          onDoubleTap: () => print("double tapped"),
-          onSwipeLeft: () => print("Swiped left"),
-          onSwipeRight: () => print("Swiped right"),
-          children: List<Widget>.generate(
-            10,
-            (index) {
-              return Center(
-                child: Text(
-                  "Card number $index",
-                  style: TextStyle(fontSize: 30),
-                ),
-              );
-            },
-          ),
-        ),
+        child: StreamBuilder<List>(
+            stream: jokesApi.jokesStream,
+            builder: (context, snap) {
+              if (snap.hasData) {
+                print(snap.data);
+                return SwipeCards(
+                  onSwipedLeftAppear: Container(
+                    color: Colors.red,
+                    child: Center(
+                      child: Text(
+                        "LEFT",
+                        style: TextStyle(
+                          fontSize: 50,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                  onSwipedRightAppear: Container(
+                    color: Colors.blue,
+                    child: Center(
+                      child: Text(
+                        "RIGHT",
+                        style: TextStyle(
+                          fontSize: 50,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                  screenHeight: MediaQuery.of(context).size.height,
+                  screenWidth: MediaQuery.of(context).size.width,
+                  onDoubleTap: () => print("double tapped"),
+                  onSwipeLeft: () => jokesApi.swipeRight(),
+                  onSwipeRight: () => jokesApi.swipeRight(),
+                  children: List<Widget>.generate(
+                    snap.data.length,
+                    (index) {
+                      return Center(
+                        child: Text(
+                          snap.data[index].toString() + " $index",
+                          style: TextStyle(fontSize: 30),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              }
+              return CircularProgressIndicator();
+            }),
       ),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Colors.yellow,
@@ -126,3 +136,71 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+/*
+return SwipeCards(
+                  onSwipedLeftAppear: Container(
+                    color: Colors.red,
+                    child: Center(
+                      child: Text(
+                        "LEFT",
+                        style: TextStyle(
+                          fontSize: 50,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                  onSwipedRightAppear: Container(
+                    color: Colors.blue,
+                    child: Center(
+                      child: Text(
+                        "RIGHT",
+                        style: TextStyle(
+                          fontSize: 50,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                  screenHeight: MediaQuery.of(context).size.height,
+                  screenWidth: MediaQuery.of(context).size.width,
+                  onDoubleTap: () => print("double tapped"),
+                  onSwipeLeft: () => jokesApi.swipeRight(),
+                  onSwipeRight: () => jokesApi.swipeRight(),
+                  children: List<Widget>.generate(
+                    snap.data.length,
+                    (index) {
+                      return Center(
+                        child: Text(
+                          snap.data[index].toString() + " $index",
+                          style: TextStyle(fontSize: 30),
+                        ),
+                      );
+                    },
+                  ),
+                )
+*/
+
+
+
+//----------------------------------------------------
+/*return ListView.builder(itemBuilder: (context, index) {
+                  return Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Material(
+                      elevation: 10,
+                      borderRadius: BorderRadius.circular(20),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Container(
+                          color: Colors.white,
+                          padding: EdgeInsets.all(50),
+                          child: Center(
+                            child: Text(snap.data[index]),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },itemCount: snap.data.length,);*/
