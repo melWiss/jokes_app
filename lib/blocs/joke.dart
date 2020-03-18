@@ -4,20 +4,27 @@ import 'dart:convert';
 
 class JokesApi {
   List _jokes = [];
+  int _counter = 0;
   final StreamController<List> _streamController = StreamController<List>();
   Stream<List> get jokesStream => _streamController.stream;
   StreamSink<List> get _jokesSink => _streamController.sink;
 
   JokesApi() {
     //_streamController.add(_jokes);
+    initJokes();
+  }
+
+  initJokes(){
     for (int i = 0; i < 3; i++) {
       getJokes().then((value) {
-        _jokes.add(value);
+        if (value != "NULL") _jokes.add(value);
       }).whenComplete(() => _jokesSink.add(_jokes));
     }
   }
 
   swipeRight() {
+    _counter++;
+    print("index: "+_counter.toString());
     getJokes().then((value) {
       if (value != "NULL") {
         _jokes.add(value);
@@ -43,5 +50,9 @@ class JokesApi {
 
   dispose() {
     _streamController.close();
+  }
+
+  int getCounter(){
+    return _counter;
   }
 }

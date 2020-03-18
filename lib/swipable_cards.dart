@@ -12,6 +12,7 @@ class SwipeCards extends StatefulWidget {
     this.onDoubleTap,
     this.onSwipedRightAppear,
     this.onSwipedLeftAppear,
+    this.borderColor,
   }) : super(key: key);
   final double screenHeight, screenWidth;
   final int itemCount;
@@ -20,6 +21,7 @@ class SwipeCards extends StatefulWidget {
   final Function onSwipeRight;
   final Function onDoubleTap;
   final Widget onSwipedLeftAppear, onSwipedRightAppear;
+  final Color borderColor;
 
   @override
   _SwipeCardsState createState() => _SwipeCardsState();
@@ -39,6 +41,7 @@ class _SwipeCardsState extends State<SwipeCards> {
   List<Widget> cards;
   int counter;
   Function onSwipeLeft, onSwipeRight, onDoubleTap;
+  Color borderColor;
   @override
   void initState() {
     super.initState();
@@ -51,6 +54,8 @@ class _SwipeCardsState extends State<SwipeCards> {
     onSwipeLeft = widget.onSwipeLeft;
     onSwipeRight = widget.onSwipeRight;
     onDoubleTap = widget.onDoubleTap;
+    borderColor =
+        widget.borderColor != null ? widget.borderColor : Colors.transparent;
     initCards();
     init();
   }
@@ -104,10 +109,17 @@ class _SwipeCardsState extends State<SwipeCards> {
                       borderRadius: BorderRadius.all(Radius.circular(20)),
                       child: AnimatedContainer(
                         duration: Duration(milliseconds: duration),
-                        color: thirdCardColor,
                         height: heightCard2,
                         width: widthCard2,
                         child: card3,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                          color: thirdCardColor,
+                          border: Border.all(
+                            width: 1.5,
+                            color: borderColor,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -140,8 +152,15 @@ class _SwipeCardsState extends State<SwipeCards> {
                         duration: Duration(milliseconds: duration),
                         height: heightCard2End,
                         width: widthCard2End,
-                        color: Colors.white38,
                         child: card2,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                          color: Colors.white38,
+                          border: Border.all(
+                            width: 1.5,
+                            color: borderColor,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -166,6 +185,9 @@ class _SwipeCardsState extends State<SwipeCards> {
                         widthCard2End = (widget.screenWidth * .9) * .95;
                         thirdCardColor = Colors.white38;
                       }
+                      if (dx1End == screenWidth)
+                        onSwipeRight();
+                      else if (dx1End == -screenWidth) onSwipeLeft();
                     });
                   },
                   child: Material(
@@ -174,9 +196,13 @@ class _SwipeCardsState extends State<SwipeCards> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.all(Radius.circular(20)),
                       child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white38,
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                          border: Border.all(width: 2, color: borderColor),
+                        ),
                         height: heightCard1,
                         width: widthCard1,
-                        color: Colors.white38,
                         child: Stack(
                           children: <Widget>[
                             card1,
@@ -258,7 +284,6 @@ class _SwipeCardsState extends State<SwipeCards> {
                         },
                         onHorizontalDragEnd: (DragEndDetails details) {
                           if (details.velocity.pixelsPerSecond.dx >= 1200) {
-                            onSwipeRight();
                             setState(() {
                               dx1End = widget.screenWidth;
                               dx1 = ((widget.screenWidth * .9) * .05) / 2;
@@ -267,7 +292,6 @@ class _SwipeCardsState extends State<SwipeCards> {
                             });
                           } else if (details.velocity.pixelsPerSecond.dx <=
                               -1200) {
-                            onSwipeLeft();
                             setState(() {
                               dx1End = -widget.screenWidth;
                               dx1 = ((widget.screenWidth * .9) * .05) / 2;
