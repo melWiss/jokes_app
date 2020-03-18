@@ -23,6 +23,26 @@ class JokesApi {
   }
 
   swipeRight() {
+    voteJoke(_jokes[_counter]['id'], true).then((value) {
+      if(value!="NULL"){
+        print("upvotes: "+value['upvotes'].toString());
+      }
+    });
+    _counter++;
+    print("index: "+_counter.toString());
+    getJokes().then((value) {
+      if (value != "NULL") {
+        _jokes.add(value);
+        _jokesSink.add(_jokes);
+      }
+    });
+  }
+  swipeLeft() {
+    voteJoke(_jokes[_counter]['id'], false).then((value) {
+      if(value!="NULL"){
+        print("downvotes: "+value['downvotes'].toString());
+      }
+    });
     _counter++;
     print("index: "+_counter.toString());
     getJokes().then((value) {
@@ -33,6 +53,22 @@ class JokesApi {
     });
   }
 
+  Future voteJoke(String jokeId,bool jokeVote)async{
+    String vote = jokeVote?"upvote":"downvote";
+    var result;
+    try {
+      var response =
+          await http.post("https://joke3.p.rapidapi.com/v1/joke/"+jokeId+"/"+vote, headers: {
+        "x-rapidapi-host": "joke3.p.rapidapi.com",
+        "x-rapidapi-key": "82f039ffd4msh4f43b5938417b2fp11abd7jsne56264a66ebb"
+      });
+      result = jsonDecode(response.body);
+    } catch (e) {
+      result = "NULL";
+    }
+    return result;
+  }
+
   Future getJokes() async {
     var result;
     try {
@@ -41,7 +77,7 @@ class JokesApi {
         "x-rapidapi-host": "joke3.p.rapidapi.com",
         "x-rapidapi-key": "82f039ffd4msh4f43b5938417b2fp11abd7jsne56264a66ebb"
       });
-      result = jsonDecode(response.body)['content'];
+      result = jsonDecode(response.body);
     } catch (e) {
       result = "NULL";
     }

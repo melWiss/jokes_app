@@ -125,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     onDoubleTap: () => print("double tapped"),
                     onSwipeLeft: () {
                       setState(() {
-                        jokesApi.swipeRight();
+                        jokesApi.swipeLeft();
                       });
                     },
                     onSwipeRight: () {
@@ -140,7 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: Padding(
                             padding: EdgeInsets.all(18.0),
                             child: Text(
-                              snap.data[index].toString(),
+                              snap.data[index]['content'].toString(),
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 30,
