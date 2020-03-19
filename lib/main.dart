@@ -6,8 +6,6 @@ import 'package:flutter/foundation.dart'
 import 'package:jokes_app/blocs/joke.dart';
 
 void main() {
-  if (Platform.isWindows || Platform.isLinux)
-    debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
   runApp(MyApp());
 }
 
