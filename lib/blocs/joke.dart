@@ -26,24 +26,16 @@ class JokesApi {
   }
 
   swipeRight() {
-    Joke jo = Joke();
+    Joke jo = Joke(table: 'JOKES');
+    jo.insertJoke(Joke(
+      id: _jokes[_counter]['id'],
+      content: _jokes[_counter]['content'],
+      upvotes: _jokes[_counter]['upvotes'] + 1,
+      downvotes: _jokes[_counter]['downvotes'],
+    ));
     voteJoke(_jokes[_counter]['id'], true).then((value) {
       if (value != "NULL") {
         print("upvotes: " + value['upvotes'].toString());
-        jo.insertJoke(Joke(
-          id: value['id'],
-          content: value['content'],
-          upvotes: value['upvotes'],
-          downvotes: value['downvotes'],
-        )).whenComplete(
-          () => jo.getLocalJokes().then(
-            (value) {
-              for (Joke joke in value) {
-                print(joke.toMap());
-              }
-            },
-          ),
-        );
       }
     });
     _counter++;
@@ -113,5 +105,3 @@ class JokesApi {
     return _counter;
   }
 }
-
-

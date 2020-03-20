@@ -44,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     bottomIndex = 0;
     index = 0;
-    joke = Joke();
+    joke = Joke(table: "JOKES");
   }
 
   @override

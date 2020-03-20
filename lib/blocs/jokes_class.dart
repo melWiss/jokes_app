@@ -3,9 +3,9 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class Joke {
-  String id, content;
+  String table,id, content;
   int upvotes, downvotes;
-  Joke({this.id, this.content, this.upvotes, this.downvotes});
+  Joke({this.id, this.content, this.upvotes, this.downvotes,this.table});
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -20,7 +20,7 @@ class Joke {
       join(await getDatabasesPath(), 'jokes_database.db'),
       onCreate: (db, version) {
         return db.execute(
-          "CREATE TABLE JOKES(id TEXT PRIMARY KEY, content TEXT, upvotes INTEGER, downvotes INTEGER)",
+          "CREATE TABLE "+table+"(id TEXT PRIMARY KEY, content TEXT, upvotes INTEGER, downvotes INTEGER)",
         );
       },
       version: 1,
@@ -32,7 +32,7 @@ class Joke {
   Future<void> insertJoke(Joke joke) async {
     final Database db = await retrieveJokesDatabase();
     await db.insert(
-      'JOKES',
+      table,
       joke.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
@@ -40,7 +40,7 @@ class Joke {
 
   Future<List<Joke>> getLocalJokes() async {
     final Database db = await retrieveJokesDatabase();
-    final List<Map<String, dynamic>> maps = await db.query('JOKES');
+    final List<Map<String, dynamic>> maps = await db.query(table);
     return List.generate(maps.length, (i) {
       return Joke(
         id: maps[i]['id'],
@@ -54,7 +54,7 @@ class Joke {
   Future<void> updateLocalJokes(Joke joke) async {
     final db = await retrieveJokesDatabase();
     await db.update(
-      'JOKES',
+      table,
       joke.toMap(),
       where: "id = ?",
       whereArgs: [joke.id],
@@ -64,7 +64,7 @@ class Joke {
   Future<void> deleteLocalJoke(String id) async {
     final db = await retrieveJokesDatabase();
     await db.delete(
-      'JOKES',
+      table,
       where: "id = ?",
       whereArgs: [id],
     );
