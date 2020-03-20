@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+import 'jokes_class.dart';
 
 class JokesApi {
   List _jokes = [];
@@ -14,7 +17,7 @@ class JokesApi {
     initJokes();
   }
 
-  initJokes(){
+  initJokes() {
     for (int i = 0; i < 3; i++) {
       getJokes().then((value) {
         if (value != "NULL") _jokes.add(value);
@@ -23,28 +26,28 @@ class JokesApi {
   }
 
   swipeRight() {
+    Joke jo = Joke();
     voteJoke(_jokes[_counter]['id'], true).then((value) {
-      if(value!="NULL"){
-        print("upvotes: "+value['upvotes'].toString());
-      }
-    });
-    _counter++;
-    print("index: "+_counter.toString());
-    getJokes().then((value) {
       if (value != "NULL") {
-        _jokes.add(value);
-        _jokesSink.add(_jokes);
-      }
-    });
-  }
-  swipeLeft() {
-    voteJoke(_jokes[_counter]['id'], false).then((value) {
-      if(value!="NULL"){
-        print("downvotes: "+value['downvotes'].toString());
+        print("upvotes: " + value['upvotes'].toString());
+        jo.insertJoke(Joke(
+          id: value['id'],
+          content: value['content'],
+          upvotes: value['upvotes'],
+          downvotes: value['downvotes'],
+        )).whenComplete(
+          () => jo.getLocalJokes().then(
+            (value) {
+              for (Joke joke in value) {
+                print(joke.toMap());
+              }
+            },
+          ),
+        );
       }
     });
     _counter++;
-    print("index: "+_counter.toString());
+    print("index: " + _counter.toString());
     getJokes().then((value) {
       if (value != "NULL") {
         _jokes.add(value);
@@ -53,15 +56,33 @@ class JokesApi {
     });
   }
 
-  Future voteJoke(String jokeId,bool jokeVote)async{
-    String vote = jokeVote?"upvote":"downvote";
+  swipeLeft() {
+    voteJoke(_jokes[_counter]['id'], false).then((value) {
+      if (value != "NULL") {
+        print("downvotes: " + value['downvotes'].toString());
+      }
+    });
+    _counter++;
+    print("index: " + _counter.toString());
+    getJokes().then((value) {
+      if (value != "NULL") {
+        _jokes.add(value);
+        _jokesSink.add(_jokes);
+      }
+    });
+  }
+
+  Future voteJoke(String jokeId, bool jokeVote) async {
+    String vote = jokeVote ? "upvote" : "downvote";
     var result;
     try {
-      var response =
-          await http.post("https://joke3.p.rapidapi.com/v1/joke/"+jokeId+"/"+vote, headers: {
-        "x-rapidapi-host": "joke3.p.rapidapi.com",
-        "x-rapidapi-key": "82f039ffd4msh4f43b5938417b2fp11abd7jsne56264a66ebb"
-      });
+      var response = await http.post(
+          "https://joke3.p.rapidapi.com/v1/joke/" + jokeId + "/" + vote,
+          headers: {
+            "x-rapidapi-host": "joke3.p.rapidapi.com",
+            "x-rapidapi-key":
+                "82f039ffd4msh4f43b5938417b2fp11abd7jsne56264a66ebb"
+          });
       result = jsonDecode(response.body);
     } catch (e) {
       result = "NULL";
@@ -88,7 +109,9 @@ class JokesApi {
     _streamController.close();
   }
 
-  int getCounter(){
+  int getCounter() {
     return _counter;
   }
 }
+
+
