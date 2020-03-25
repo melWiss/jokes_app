@@ -69,119 +69,128 @@ class _MyHomePageState extends State<MyHomePage> {
                 stream: jokesApi.jokesStream,
                 builder: (context, snap) {
                   if (snap.hasData) {
-                    print(snap.data.length);
-                    if (snap.data.length != 0 &&
-                        jokesApi.getCounter() < snap.data.length)
-                      return SwipeCards(
-                        borderColor: Colors.black,
-                        onSwipedLeftAppear: Container(
-                          color: Colors.red,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: <Widget>[
-                              Text(
-                                "😒",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 100,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Text(
-                                "Meh",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 50,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        onSwipedRightAppear: Container(
-                          color: Colors.green,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: <Widget>[
-                              Text(
-                                "😂",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 100,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Text(
-                                "Haha",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 50,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        screenHeight: MediaQuery.of(context).size.height,
-                        screenWidth: MediaQuery.of(context).size.width,
-                        onDoubleTap: () => print("double tapped"),
-                        onSwipeLeft: () {
-                          setState(() {
-                            jokesApi.swipeLeft();
-                          });
-                        },
-                        onSwipeRight: () {
-                          setState(() {
-                            jokesApi.swipeRight();
-                          });
-                        },
-                        children: List<Widget>.generate(
-                          snap.data.length,
-                          (index) {
-                            return Center(
-                              child: Padding(
-                                padding: EdgeInsets.all(18.0),
-                                child: Text(
-                                  snap.data[index]['content'].toString(),
+                    try {
+                      print(snap.data.length);
+                      if (snap.data.length != 0 &&
+                          jokesApi.getCounter() < snap.data.length)
+                        return SwipeCards(
+                          borderColor: Colors.black,
+                          onSwipedLeftAppear: Container(
+                            color: Colors.red,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: <Widget>[
+                                Text(
+                                  "😒",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    fontSize: 30,
+                                    fontSize: 100,
+                                    color: Colors.white,
                                   ),
                                 ),
-                              ),
-                            );
+                                Text(
+                                  "Meh",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 50,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          onSwipedRightAppear: Container(
+                            color: Colors.green,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: <Widget>[
+                                Text(
+                                  "😂",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 100,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Text(
+                                  "Haha",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 50,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          screenHeight: MediaQuery.of(context).size.height,
+                          screenWidth: MediaQuery.of(context).size.width,
+                          onDoubleTap: () => print("double tapped"),
+                          onSwipeLeft: () {
+                            setState(() {
+                              jokesApi.swipeLeft();
+                            });
                           },
+                          onSwipeRight: () {
+                            setState(() {
+                              jokesApi.swipeRight();
+                            });
+                          },
+                          children: List<Widget>.generate(
+                            snap.data.length,
+                            (index) {
+                              return Center(
+                                child: Padding(
+                                  padding: EdgeInsets.all(18.0),
+                                  child: Text(
+                                    snap.data[index]['joke'].toString(),
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      else
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Text(
+                              "There's no jokes :(\nCheck your internet connection.",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 18),
+                            ),
+                            FlatButton(
+                              onPressed: () {
+                                jokesApi.initJokes();
+                              },
+                              child: Text(
+                                "Refresh",
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20)),
+                                  side: BorderSide(
+                                      width: 2, color: Colors.yellow)),
+                              color: Colors.yellow,
+                            )
+                          ],
+                        );
+                    } catch (e) {
+                      return Center(
+                        child: Text(
+                          "There's no joke\nin the database :(",
+                          style: TextStyle(fontSize: 18),
                         ),
                       );
-                    else
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            "There's no jokes :(\nCheck your internet connection.",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          FlatButton(
-                            onPressed: () {
-                              jokesApi.initJokes();
-                            },
-                            child: Text(
-                              "Refresh",
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20)),
-                                side:
-                                    BorderSide(width: 2, color: Colors.yellow)),
-                            color: Colors.yellow,
-                          )
-                        ],
-                      );
+                    }
                   }
                   return CircularProgressIndicator();
                 }),
@@ -199,65 +208,67 @@ class _MyHomePageState extends State<MyHomePage> {
                     snap.error,
                   ),
                 );
-              return ListView.builder(
-                itemCount: snap.data.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Material(
-                      elevation: 18,
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      child: Stack(
-                        children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width,
-                            padding: EdgeInsets.only(
-                              top: 14,
-                              bottom: 24,
-                              left: 14,
-                              right: 14,
-                            ),
-                            child: Text(
-                              snap.data[index].toMap()['content'],
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                              border: Border.all(
-                                color: Colors.black,
-                                width: 1,
+              else if (snap.hasData)
+                return ListView.builder(
+                  itemCount: snap.data.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Material(
+                        elevation: 18,
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        child: Stack(
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width,
+                              padding: EdgeInsets.only(
+                                top: 14,
+                                bottom: 24,
+                                left: 14,
+                                right: 14,
+                              ),
+                              child: Text(
+                                snap.data[index].toMap()['joke'],
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10)),
+                                border: Border.all(
+                                  color: Colors.black,
+                                  width: 1,
+                                ),
                               ),
                             ),
-                          ),
-                          Positioned(
-                            bottom: 5,
-                            right: 5,
-                            child: Row(
-                              children: <Widget>[
-                                Icon(
-                                  Icons.thumb_up,
-                                  color: Colors.green,
-                                ),
-                                Text(snap.data[index]
-                                    .toMap()['upvotes']
-                                    .toString()),
-                                Icon(
-                                  Icons.thumb_down,
-                                  color: Colors.red,
-                                ),
-                                Text(snap.data[index]
-                                    .toMap()['downvotes']
-                                    .toString()),
-                              ],
+                            Positioned(
+                              bottom: 5,
+                              right: 5,
+                              child: Row(
+                                children: <Widget>[
+                                  Icon(
+                                    Icons.thumb_up,
+                                    color: Colors.green,
+                                  ),
+                                  Text(snap.data[index]
+                                      .toMap()['upvotes']
+                                      .toString()),
+                                  Icon(
+                                    Icons.thumb_down,
+                                    color: Colors.red,
+                                  ),
+                                  Text(snap.data[index]
+                                      .toMap()['downvotes']
+                                      .toString()),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
-              );
+                    );
+                  },
+                );
+              return Container();
             },
           ),
         ],
@@ -285,7 +296,12 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.yellowAccent,
         label: Text("Tell a Joke!"),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => TellJoke(
+                    jokesApi: jokesApi,
+                  )));
+        },
         tooltip: 'Tell a joke to the community',
         icon: Icon(Icons.add),
       ),
@@ -293,68 +309,41 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-/*
-return SwipeCards(
-                  onSwipedLeftAppear: Container(
-                    color: Colors.red,
-                    child: Center(
-                      child: Text(
-                        "LEFT",
-                        style: TextStyle(
-                          fontSize: 50,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                  onSwipedRightAppear: Container(
-                    color: Colors.blue,
-                    child: Center(
-                      child: Text(
-                        "RIGHT",
-                        style: TextStyle(
-                          fontSize: 50,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                  screenHeight: MediaQuery.of(context).size.height,
-                  screenWidth: MediaQuery.of(context).size.width,
-                  onDoubleTap: () => print("double tapped"),
-                  onSwipeLeft: () => jokesApi.swipeRight(),
-                  onSwipeRight: () => jokesApi.swipeRight(),
-                  children: List<Widget>.generate(
-                    snap.data.length,
-                    (index) {
-                      return Center(
-                        child: Text(
-                          snap.data[index].toString() + " $index",
-                          style: TextStyle(fontSize: 30),
-                        ),
-                      );
-                    },
-                  ),
-                )
-*/
-
-//----------------------------------------------------
-/*return ListView.builder(itemBuilder: (context, index) {
-                  return Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Material(
-                      elevation: 10,
-                      borderRadius: BorderRadius.circular(20),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: Container(
-                          color: Colors.white,
-                          padding: EdgeInsets.all(50),
-                          child: Center(
-                            child: Text(snap.data[index]),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },itemCount: snap.data.length,);*/
+class TellJoke extends StatelessWidget {
+  final JokesApi jokesApi;
+  TellJoke({this.jokesApi});
+  @override
+  Widget build(BuildContext context) {
+    String joke = "";
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Tell a joke'),
+      ),
+      body: Column(
+        children: <Widget>[
+          TextField(
+            maxLines: null,
+            onChanged: (value) => joke = value,
+            style: TextStyle(fontSize: 18),
+          ),
+          FlatButton(
+            onPressed: () {
+              if (joke.length > 0) {
+                jokesApi.tellJoke(joke);
+                jokesApi.initJokes();
+                Navigator.of(context).pop();
+              }
+            },
+            child: Text(
+              "Tell!",
+              style: TextStyle(color: Colors.black, fontSize: 18),
+            ),
+            color: Colors.yellow,
+            shape: Border.all(
+                width: 2, color: Colors.yellow, style: BorderStyle.solid),
+          ),
+        ],
+      ),
+    );
+  }
+}

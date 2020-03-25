@@ -3,15 +3,16 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class Joke {
-  String table,id, content;
-  int upvotes, downvotes;
-  Joke({this.id, this.content, this.upvotes, this.downvotes,this.table});
+  String table, joke;
+  int id,upvotes, downvotes,votes;
+  Joke({this.id, this.joke, this.upvotes, this.downvotes,this.table,this.votes});
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'content': content,
+      'joke': joke,
       'upvotes': upvotes,
-      'downvotes': downvotes
+      'downvotes': downvotes,
+      'votes': votes,
     };
   }
 
@@ -20,7 +21,7 @@ class Joke {
       join(await getDatabasesPath(), 'jokes_database.db'),
       onCreate: (db, version) {
         return db.execute(
-          "CREATE TABLE "+table+"(id TEXT PRIMARY KEY, content TEXT, upvotes INTEGER, downvotes INTEGER)",
+          "CREATE TABLE "+table+"(id INTEGER PRIMARY KEY, joke TEXT, upvotes INTEGER, downvotes INTEGER, votes INTEGER)",
         );
       },
       version: 1,
@@ -44,9 +45,10 @@ class Joke {
     return List.generate(maps.length, (i) {
       return Joke(
         id: maps[i]['id'],
-        content: maps[i]['content'],
+        joke: maps[i]['joke'],
         upvotes: maps[i]['upvotes'],
         downvotes: maps[i]['downvotes'],
+        votes: maps[i]['votes']
       );
     });
   }

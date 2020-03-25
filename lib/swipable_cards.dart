@@ -51,9 +51,6 @@ class _SwipeCardsState extends State<SwipeCards> {
     screenWidth = widget.screenWidth;
     itemCount = widget.itemCount;
     counter = 0;
-    onSwipeLeft = widget.onSwipeLeft;
-    onSwipeRight = widget.onSwipeRight;
-    onDoubleTap = widget.onDoubleTap;
     borderColor =
         widget.borderColor != null ? widget.borderColor : Colors.transparent;
     initCards();
@@ -82,6 +79,9 @@ class _SwipeCardsState extends State<SwipeCards> {
     dy3 = dy2;
     thirdCardColor = Colors.white10;
     duration = 0;
+    onSwipeLeft = widget.onSwipeLeft!=null?widget.onSwipeLeft:(){};
+    onSwipeRight = widget.onSwipeRight!=null?widget.onSwipeRight:(){};
+    onDoubleTap = widget.onDoubleTap!=null?widget.onDoubleTap:(){};
   }
 
   @override

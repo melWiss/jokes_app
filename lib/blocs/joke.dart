@@ -18,6 +18,8 @@ class JokesApi {
   }
 
   initJokes() {
+    _counter = 0;
+    _jokes = [];
     for (int i = 0; i < 3; i++) {
       getJokes().then((value) {
         if (value != "NULL") _jokes.add(value);
@@ -25,17 +27,27 @@ class JokesApi {
     }
   }
 
+  tellJoke(String joke) async {
+    var response = await http.post(
+      "https://elwiss-jokes.herokuapp.com/postJoke",
+      body: jsonEncode({
+        "joke":joke,
+      },)
+    );
+  }
+
   swipeRight() {
     Joke jo = Joke(table: 'JOKES');
     jo.insertJoke(Joke(
       id: _jokes[_counter]['id'],
-      content: _jokes[_counter]['content'],
+      joke: _jokes[_counter]['joke'],
       upvotes: _jokes[_counter]['upvotes'] + 1,
       downvotes: _jokes[_counter]['downvotes'],
+      votes: _jokes[_counter]['votes'] + 1,
     ));
     voteJoke(_jokes[_counter]['id'], true).then((value) {
       if (value != "NULL") {
-        print("upvotes: " + value['upvotes'].toString());
+        print("upvotes:joke " + value['upvotes'].toString());
       }
     });
     _counter++;
@@ -64,19 +76,30 @@ class JokesApi {
     });
   }
 
-  Future voteJoke(String jokeId, bool jokeVote) async {
-    String vote = jokeVote ? "upvote" : "downvote";
+  Future voteJoke(int jokeId, bool jokeVote) async {
     var result;
+    var response;
     try {
-      var response = await http.post(
-          "https://joke3.p.rapidapi.com/v1/joke/" + jokeId + "/" + vote,
-          headers: {
-            "x-rapidapi-host": "joke3.p.rapidapi.com",
-            "x-rapidapi-key":
-                "82f039ffd4msh4f43b5938417b2fp11abd7jsne56264a66ebb"
-          });
-      result = jsonDecode(response.body);
+      if (jokeVote)
+        response = await http.post(
+          "https://elwiss-jokes.herokuapp.com/upvoteJoke",
+          body: jsonEncode(
+            {'id': jokeId},
+          ),
+        );
+      else
+        response = await http.post(
+          "https://elwiss-jokes.herokuapp.com/downvoteJoke",
+          body: jsonEncode(
+            {
+              'id': jokeId,
+            },
+          ),
+        );
+      result = jsonDecode(response.body)['jokes'];
+      print(jsonEncode(result));
     } catch (e) {
+      print(e.toString());
       result = "NULL";
     }
     return result;
@@ -85,12 +108,10 @@ class JokesApi {
   Future getJokes() async {
     var result;
     try {
-      var response =
-          await http.get("https://joke3.p.rapidapi.com/v1/joke", headers: {
-        "x-rapidapi-host": "joke3.p.rapidapi.com",
-        "x-rapidapi-key": "82f039ffd4msh4f43b5938417b2fp11abd7jsne56264a66ebb"
-      });
-      result = jsonDecode(response.body);
+      var response = await http.get(
+        "https://elwiss-jokes.herokuapp.com/getRandomJoke",
+      );
+      result = jsonDecode(response.body)['jokes'];
     } catch (e) {
       result = "NULL";
     }
