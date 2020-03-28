@@ -37,22 +37,28 @@ class JokesApi {
             ));
   }
 
-  swipeRight() {
+  swipeRight() async{
     Joke jo = Joke(table: 'JOKES');
-    jo.insertJoke(Joke(
-      id: _jokes[_counter]['id'],
-      joke: _jokes[_counter]['joke'],
-      upvotes: _jokes[_counter]['upvotes'] + 1,
-      downvotes: _jokes[_counter]['downvotes'],
-      votes: _jokes[_counter]['votes'] + 1,
-    ));
-    voteJoke(_jokes[_counter]['id'], true).then((value) {
-      if (value != "NULL") {
-        print("upvotes:joke " + value['upvotes'].toString());
-      }
-    });
-    _counter++;
-    print("index: " + _counter.toString());
+    try {
+      var joke = await getJokeById(_jokes[_counter]['id']);
+      jo.insertJoke(Joke(
+        id: joke['id'],
+        joke: joke['joke'],
+        upvotes: joke['upvotes'] + 1,
+        downvotes: joke['downvotes'],
+        votes: joke['votes'] + 1,
+      ));
+      voteJoke(joke['id'], true).then((value) {
+        if (value != "NULL") {
+          print("upvotes:joke " + value['upvotes'].toString());
+        }
+      });
+      _counter++;
+      print("index: " + _counter.toString());
+    } catch (e) {
+      print(e);
+    }
+
     getJokes().then((value) {
       if (value != "NULL") {
         _jokes.add(value);
@@ -61,22 +67,25 @@ class JokesApi {
     });
   }
 
-  swipeLeft() {
+  swipeLeft() async {
     Joke jo = Joke(table: 'JOKES');
+    var joke = await getJokeById(_jokes[_counter]['id']);
     try {
-      if(!(((_jokes[_counter]['downvotes']/_jokes[_counter]['votes'])*100>=75)&&(_jokes[_counter]['votes']>=100)))
-      jo.updateLocalJokes(Joke(
-        id: _jokes[_counter]['id'],
-        joke: _jokes[_counter]['joke'],
-        upvotes: _jokes[_counter]['upvotes'],
-        downvotes: _jokes[_counter]['downvotes'] + 1,
-        votes: _jokes[_counter]['votes'] + 1,
-      ));
-      else jo.deleteLocalJoke(_jokes[_counter]['id'].toString());
+      if (!(((joke['downvotes'] / joke['votes']) * 100 >= 75) &&
+          (joke['votes'] >= 100)))
+        jo.updateLocalJokes(Joke(
+          id: joke['id'],
+          joke: joke['joke'],
+          upvotes: joke['upvotes'],
+          downvotes: joke['downvotes'] + 1,
+          votes: joke['votes'] + 1,
+        ));
+      else
+        jo.deleteLocalJoke(joke['id'].toString());
     } catch (e) {
       print("JOKE DOESN'T EXIST IN DATABASE\n$e");
     }
-    voteJoke(_jokes[_counter]['id'], false).then((value) {
+    voteJoke(joke['id'], false).then((value) {
       if (value != "NULL") {
         print("downvotes: " + value['downvotes'].toString());
       }
@@ -125,6 +134,19 @@ class JokesApi {
     try {
       var response = await http.get(
         "https://elwiss-jokes.herokuapp.com/getRandomJoke",
+      );
+      result = jsonDecode(response.body)['jokes'];
+    } catch (e) {
+      result = "NULL";
+    }
+    return result;
+  }
+
+  Future getJokeById(int id) async {
+    var result;
+    try {
+      var response = await http.get(
+        "https://elwiss-jokes.herokuapp.com/getJokeById?id=" + id.toString(),
       );
       result = jsonDecode(response.body)['jokes'];
     } catch (e) {
