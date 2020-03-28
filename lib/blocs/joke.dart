@@ -17,7 +17,7 @@ class JokesApi {
     initJokes();
   }
 
-  initJokes() {
+  initJokes() async {
     _counter = 0;
     _jokes = [];
     for (int i = 0; i < 3; i++) {
@@ -28,12 +28,13 @@ class JokesApi {
   }
 
   tellJoke(String joke) async {
-    var response = await http.post(
-      "https://elwiss-jokes.herokuapp.com/postJoke",
-      body: jsonEncode({
-        "joke":joke,
-      },)
-    );
+    var response =
+        await http.post("https://elwiss-jokes.herokuapp.com/postJoke",
+            body: jsonEncode(
+              {
+                "joke": joke,
+              },
+            ));
   }
 
   swipeRight() {
@@ -61,6 +62,20 @@ class JokesApi {
   }
 
   swipeLeft() {
+    Joke jo = Joke(table: 'JOKES');
+    try {
+      if(!(((_jokes[_counter]['downvotes']/_jokes[_counter]['votes'])*100>=75)&&(_jokes[_counter]['votes']>=100)))
+      jo.updateLocalJokes(Joke(
+        id: _jokes[_counter]['id'],
+        joke: _jokes[_counter]['joke'],
+        upvotes: _jokes[_counter]['upvotes'],
+        downvotes: _jokes[_counter]['downvotes'] + 1,
+        votes: _jokes[_counter]['votes'] + 1,
+      ));
+      else jo.deleteLocalJoke(_jokes[_counter]['id'].toString());
+    } catch (e) {
+      print("JOKE DOESN'T EXIST IN DATABASE\n$e");
+    }
     voteJoke(_jokes[_counter]['id'], false).then((value) {
       if (value != "NULL") {
         print("downvotes: " + value['downvotes'].toString());

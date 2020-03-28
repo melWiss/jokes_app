@@ -35,7 +35,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var bottomIndex;
-  int index;
   Joke joke;
   JokesApi jokesApi = JokesApi();
 
@@ -43,7 +42,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     bottomIndex = 0;
-    index = 0;
     joke = Joke(table: "JOKES");
   }
 
@@ -70,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 builder: (context, snap) {
                   if (snap.hasData) {
                     try {
-                      print(snap.data.length);
+                      print("u mean here? "+snap.data.length.toString());
                       if (snap.data.length != 0 &&
                           jokesApi.getCounter() < snap.data.length)
                         return SwipeCards(
@@ -184,11 +182,31 @@ class _MyHomePageState extends State<MyHomePage> {
                           ],
                         );
                     } catch (e) {
-                      return Center(
-                        child: Text(
-                          "There's no joke\nin the database :(",
-                          style: TextStyle(fontSize: 18),
-                        ),
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            "There's no jokes :(\nCheck your internet connection.",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          FlatButton(
+                            onPressed: () {
+                              jokesApi.initJokes();
+                            },
+                            child: Text(
+                              "Refresh",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                                side:
+                                    BorderSide(width: 2, color: Colors.yellow)),
+                            color: Colors.yellow,
+                          )
+                        ],
                       );
                     }
                   }
@@ -327,9 +345,9 @@ class TellJoke extends StatelessWidget {
             style: TextStyle(fontSize: 18),
           ),
           FlatButton(
-            onPressed: () {
+            onPressed: () async {
               if (joke.length > 0) {
-                jokesApi.tellJoke(joke);
+                await jokesApi.tellJoke(joke);
                 jokesApi.initJokes();
                 Navigator.of(context).pop();
               }
